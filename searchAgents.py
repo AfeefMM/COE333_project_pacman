@@ -394,7 +394,23 @@ def cornersHeuristic(state: Any, problem: CornersProblem):
 
     "*** YOUR CODE HERE ***"
     
-    return 0 # Default to trivial solution
+    unvisited = []
+    node = state[0]
+    visitedCrnrs = state[1]
+    totdist = 0
+ 
+    for crnr in corners:
+        if crnr not in visitedCrnrs:
+            unvisited.append(crnr)
+    
+    while unvisited != []:
+        crnr = min([(mazeDistance(node, crnr, problem.sGS), crnr) for crnr in unvisited])
+        dist = min([(mazeDistance(node, crnr, problem.sGS), crnr) for crnr in unvisited])
+        totdist = totdist + dist
+        node = crnr
+        unvisited.remove(crnr)
+        
+    return totdist
 
 class AStarCornersAgent(SearchAgent):
     "A SearchAgent for FoodSearchProblem using A* and your foodHeuristic"
@@ -488,7 +504,18 @@ def foodHeuristic(state: Tuple[Tuple, List[List]], problem: FoodSearchProblem):
     """
     position, foodGrid = state
     "*** YOUR CODE HERE ***"
-    return 0
+    coorX = position; coorY = position
+    foodarray = []
+    for x, y in foodGrid.asList():
+        manhattan = abs(x - coorX) + abs(y - coorY)
+        foodarray.append(manhattan)
+        
+    if len(foodarray) > 0:
+        closest = min(foodarray)
+    else:
+        closest = 0
+    
+    return closest
 
 class ClosestDotSearchAgent(SearchAgent):
     "Search for all food using a sequence of searches"
@@ -519,7 +546,7 @@ class ClosestDotSearchAgent(SearchAgent):
         problem = AnyFoodSearchProblem(gameState)
 
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        return search.breadthFirstSearch(problem)
 
 class AnyFoodSearchProblem(PositionSearchProblem):
     """
@@ -555,7 +582,8 @@ class AnyFoodSearchProblem(PositionSearchProblem):
         x,y = state
 
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        isGoal = (state in self.food)
+        return isGoal
 
 def mazeDistance(point1: Tuple[int, int], point2: Tuple[int, int], gameState: pacman.GameState) -> int:
     """
